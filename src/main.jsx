@@ -6,8 +6,12 @@ import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router'
 
+import ContactsContextProvider from "./context/ContactsContext";
+
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-    <App />
+    <ContactsContextProvider>
+      <App />
+    </ContactsContextProvider>
   </BrowserRouter>
 )
