@@ -129,17 +129,24 @@ export const LoginScreen = () => {
 
     useEffect(() => {
         if (response && response.ok) {
-            /* localStorage.setItem(
+            localStorage.setItem(
                 LOCALSTORAGE_KEYS.AUTH_TOKEN,
                 response.data.authorization_token
-            ); */
-            const { authorization_token, user } = response.data;
-            localStorage.setItem(LOCALSTORAGE_KEYS.AUTH_TOKEN, authorization_token);
-            localStorage.setItem("user", JSON.stringify(user));
-            /* navigate("/home"); */
+            );
+            localStorage.setItem("user", JSON.stringify(response.data.user));
             navigate("/contacts");
         }
     }, [response]);
+
+/*     useEffect(() => {
+        if (response && response.ok) {
+            localStorage.setItem(
+                LOCALSTORAGE_KEYS.AUTH_TOKEN,
+                response.data.authorization_token
+            );
+            navigate("/contacts");
+        }
+    }, [response]); */
 
     const { handleSubmit, handleInputChange } = useForm({
         initial_form_state,
