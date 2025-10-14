@@ -14,7 +14,7 @@ function App() {
       <Route path='/login' element={<LoginScreen />} />
       <Route path='/register' element={<RegisterScreen />} />
       <Route element={<AuthMiddleware />}>
-        <Route path='/home' element={<h1>Home</h1>} />
+        {/* <Route path='/home' element={<h1>Home</h1>} /> */}
         <Route path="/contacts" element={<ContactListTest />} />
       </Route>
     </Routes>
