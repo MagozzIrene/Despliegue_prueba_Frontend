@@ -133,7 +133,8 @@ export const LoginScreen = () => {
                 LOCALSTORAGE_KEYS.AUTH_TOKEN,
                 response.data.authorization_token
             );
-            navigate("/home");
+            /* navigate("/home"); */
+            navigate("/contacts");
         }
     }, [response]);
 
