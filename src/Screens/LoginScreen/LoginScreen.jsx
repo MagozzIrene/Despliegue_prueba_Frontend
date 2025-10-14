@@ -129,10 +129,13 @@ export const LoginScreen = () => {
 
     useEffect(() => {
         if (response && response.ok) {
-            localStorage.setItem(
+            /* localStorage.setItem(
                 LOCALSTORAGE_KEYS.AUTH_TOKEN,
                 response.data.authorization_token
-            );
+            ); */
+            const { authorization_token, user } = response.data;
+            localStorage.setItem(LOCALSTORAGE_KEYS.AUTH_TOKEN, authorization_token);
+            localStorage.setItem("user", JSON.stringify(user));
             /* navigate("/home"); */
             navigate("/contacts");
         }
