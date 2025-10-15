@@ -7,11 +7,14 @@ import App from './App.jsx'
 import { BrowserRouter } from 'react-router'
 
 import ContactsContextProvider from "./context/ContactsContext";
+import AuthContextProvider from './context/AuthContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-    <ContactsContextProvider>
-      <App />
-    </ContactsContextProvider>
+    <AuthContextProvider>
+      <ContactsContextProvider>
+        <App />
+      </ContactsContextProvider>
+    </AuthContextProvider>
   </BrowserRouter>
 )

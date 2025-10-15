@@ -1,5 +1,6 @@
-import { createContext, useState, useEffect, useCallback } from "react";
+import { createContext, useState, useEffect, useCallback, useContext } from "react";
 import axios from "axios";
+import { AuthContext } from "./AuthContext";
 
 export const ContactsContext = createContext({
     contacts: [],
@@ -13,37 +14,42 @@ export const ContactsContext = createContext({
 const ContactsContextProvider = ({ children }) => {
     const [contacts, setContacts] = useState([]);
     const [isLoadingContacts, setIsLoadingContacts] = useState(true);
+    const { activeUser } = useContext(AuthContext);
 
-    const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://despliegue-prueba-backend.vercel.app";
-
-    let currentUser = {};
-    try {
-        const raw = localStorage.getItem("user");
-        currentUser = raw ? JSON.parse(raw) : {};
-    } catch {
-        currentUser = {};
-    }
+    const API_BASE =
+        import.meta.env.VITE_BACKEND_URL || "https://despliegue-prueba-backend.vercel.app";
 
     const fetchContacts = useCallback(async () => {
-        if (!currentUser?._id) return;
+        if (!activeUser?._id) return;
         setIsLoadingContacts(true);
 
         try {
-            const { data } = await axios.get(`${API_BASE}/api/contacts/${currentUser._id}/accepted`);
+            const token = localStorage.getItem("auth_token");
+            const { data } = await axios.get(
+                `${API_BASE}/api/contacts/${activeUser._id}/accepted`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
             setContacts(data.data || []);
         } catch (error) {
             console.error("Error al cargar contactos:", error);
         } finally {
             setIsLoadingContacts(false);
         }
-    }, [currentUser?._id]);
+    }, [activeUser?._id]);
 
     const addContact = async (receiverId) => {
         try {
-            const { data } = await axios.post(`${API_BASE}/api/contacts`, {
-                requester_id: currentUser._id,
-                receiver_id: receiverId,
-            });
+            const token = localStorage.getItem("auth_token");
+            const { data } = await axios.post(
+                `${API_BASE}/api/contacts`,
+                {
+                    requester_id: activeUser._id,
+                    receiver_id: receiverId,
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
             console.log("Solicitud enviada:", data);
         } catch (error) {
             console.error("Error al agregar contacto:", error);
@@ -52,9 +58,12 @@ const ContactsContextProvider = ({ children }) => {
 
     const acceptContact = async (contactId) => {
         try {
-            const { data } = await axios.put(`${API_BASE}/api/contacts/${contactId}`, {
-                status: "aceptado",
-            });
+            const token = localStorage.getItem("auth_token");
+            const { data } = await axios.put(
+                `${API_BASE}/api/contacts/${contactId}`,
+                { status: "aceptado" },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
             console.log("Solicitud aceptada:", data);
             await fetchContacts();
         } catch (error) {
@@ -64,7 +73,10 @@ const ContactsContextProvider = ({ children }) => {
 
     const removeContact = async (contactId) => {
         try {
-            await axios.delete(`${API_BASE}/api/contacts/${contactId}`);
+            const token = localStorage.getItem("auth_token");
+            await axios.delete(`${API_BASE}/api/contacts/${contactId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
             setContacts((prev) => prev.filter((c) => c._id !== contactId));
         } catch (error) {
             console.error("Error al eliminar contacto:", error);
@@ -72,8 +84,10 @@ const ContactsContextProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        fetchContacts();
-    }, [fetchContacts]);
+        if (activeUser?._id) {
+            fetchContacts();
+        }
+    }, [activeUser?._id, fetchContacts]);
 
     return (
         <ContactsContext.Provider
