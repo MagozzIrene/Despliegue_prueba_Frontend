@@ -14,7 +14,7 @@ const ContactsContextProvider = ({ children }) => {
     const [contacts, setContacts] = useState([]);
     const [isLoadingContacts, setIsLoadingContacts] = useState(true);
 
-    const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://despliegue-prueba-backend.vercel.app/";
+    const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://despliegue-prueba-backend.vercel.app";
 
     let currentUser = {};
     try {
