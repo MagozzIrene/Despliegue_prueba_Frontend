@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch.jsx";
 import useForm from "../../hooks/useForm.jsx";
 import { login } from "../../services/authService.js";
@@ -91,6 +91,11 @@ export const LoginScreen = () => {
                         {loading ? "Iniciando sesión..." : "Iniciar sesión"}
                     </button>
 
+                    <p className="forgot-password">
+                        ¿Olvidaste tu contraseña? <a href="/recover">Recuperala</a>
+                    </p>
+
+
                     {error && <p className="error-message">{error.message}</p>}
                     {response && response.ok && (
                         <p className="success-message">Inicio de sesión exitosa!</p>
@@ -98,10 +103,10 @@ export const LoginScreen = () => {
                 </form>
 
                 <p className="register-text">
-
                     ¿No tenés una cuenta? <a href="/register">Registrate</a>
                 </p>
             </div>
+
         </div>
     );
 };

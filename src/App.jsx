@@ -4,6 +4,7 @@ import RegisterScreen from './Screens/RegisterScreen/RegisterScreen'
 import { LoginScreen } from './Screens/LoginScreen/LoginScreen'
 import AuthMiddleware from './Middlewares/AuthMiddleware'
 import ContactListTest from './Screens/Test/ContactListTest'
+import { RecoverPasswordScreen } from './Screens/Auth/RecoverPasswordScreen'
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
       <Route path='/' element={<LoginScreen />} />
       <Route path='/login' element={<LoginScreen />} />
       <Route path='/register' element={<RegisterScreen />} />
+      <Route path='/recover' element={<RecoverPasswordScreen />} />
       <Route element={<AuthMiddleware />}>
         {/* <Route path='/home' element={<h1>Home</h1>} /> */}
         <Route path="/contacts" element={<ContactListTest />} />
