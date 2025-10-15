@@ -16,7 +16,13 @@ const ContactsContextProvider = ({ children }) => {
 
     const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://despliegue-prueba-backend.vercel.app/";
 
-    const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+    let currentUser = {};
+    try {
+        const raw = localStorage.getItem("user");
+        currentUser = raw ? JSON.parse(raw) : {};
+    } catch {
+        currentUser = {};
+    }
 
     const fetchContacts = useCallback(async () => {
         if (!currentUser?._id) return;

@@ -1,12 +1,12 @@
-import ENVIROMENT from "../config/enviroment"
+import ENVIROMENT from "../config/enviroment.js"
 import { CONTENT_TYPE_VALUES, HEADERS, HTTP_METHODS } from "../constants/http"
 
 
 
 export async function register(name, email, password) {
-    const usuario = {
+    const user = {
         email,
-        username: name,
+        name,
         password
     }
 
@@ -22,7 +22,7 @@ export async function register(name, email, password) {
                 //Como vamos a enviar JSON, configuro que mi consulta envia contenido tipo JSON
                 [HEADERS.CONTENT_TYPE]: CONTENT_TYPE_VALUES.JSON
             },
-            body: JSON.stringify(usuario)
+            body: JSON.stringify(user)
         }
     )
 
