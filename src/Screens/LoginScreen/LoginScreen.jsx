@@ -53,6 +53,17 @@ export const LoginScreen = () => {
         onSubmit: onLogin,
     });
 
+
+
+    const loginAsGuest = async () => {
+    await onLogin({
+        [FORM_FIELDS.EMAIL]: "invitado@demo.com",
+        [FORM_FIELDS.PASSWORD]: "invitado123",
+    });
+    };
+
+
+
     return (
         <div className="login-container">
             <div className="login-card">
@@ -89,6 +100,10 @@ export const LoginScreen = () => {
 
                     <button type="submit" disabled={loading}>
                         {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+                    </button>
+
+                    <button class="guest-login-btn" type="button" onClick={loginAsGuest}>
+                        Entrar como invitado
                     </button>
 
                     <p className="forgot-password">
