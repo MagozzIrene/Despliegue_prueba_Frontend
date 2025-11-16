@@ -31,24 +31,12 @@ const GroupsContextProvider = ({ children }) => {
     const fetchMyGroups = useCallback(async () => {
         setIsLoadingGroups(true);
         try {
-
-            const resp1 = await axios.get(
+            const resp = await axios.get(
                 `${API_BASE}/api/group-members/user/me`,
                 { headers: authHeaders }
             );
-            const meGroups = resp1?.data?.data ?? resp1?.data ?? [];
-
-            if (Array.isArray(meGroups) && meGroups.length > 0) {
-                setGroups(meGroups);
-            } else {
-
-                const resp2 = await axios.get(
-                    `${API_BASE}/api/groups`,
-                    { headers: authHeaders }
-                );
-                const allGroups = resp2?.data?.data ?? resp2?.data ?? [];
-                setGroups(Array.isArray(allGroups) ? allGroups : []);
-            }
+            const meGroups = resp?.data?.data ?? resp?.data ?? [];
+            setGroups(Array.isArray(meGroups) ? meGroups : []);
         } catch (err) {
             console.error("fetchMyGroups error:", err);
             setGroups([]);
