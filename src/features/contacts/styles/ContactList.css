@@ -1,0 +1,99 @@
+.contact-list__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+    text-align: center;
+}
+
+.contact-list__empty p {
+    color: var(--primary-txt-color);
+    font-size: var(--fs-lg);
+    position: relative;
+}
+
+.contact-list__empty p::before {
+    content: "⚠️";
+    display: block;
+    font-size: var(--fs-xxl);
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 3px #e00a0e);
+}
+
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    flex-grow: 1;
+    width: 100%;
+    padding-bottom: var(--space-xl);
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.contact-list::-webkit-scrollbar {
+    display: none;
+}
+
+.contacts-tabs {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.tabs-header {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 0.5rem;
+}
+
+.tabs-header button {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s, border-bottom 0.2s;
+}
+
+.tabs-header button.active {
+/*     color: #128C7E; */
+    border-bottom: 2px solid /* #128C7E */;
+}
+
+.tab-contact {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.tab-contact:hover {
+    background: #f5f5f5;
+}
+
+.tab-contact img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.add-contact-msg {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+@media only screen and (min-width: 750px) {
+    .contact-list {
+        gap: var(--space-md);
+    }
+}

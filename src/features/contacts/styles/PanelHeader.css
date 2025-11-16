@@ -1,0 +1,31 @@
+.panel-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 25px 25px 0 25px;
+    background: #2c2c2c;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    backdrop-filter: blur(4px);
+}
+
+.panel-header__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+}
+
+.panel-header__search {
+    padding: 0.5rem 0.7rem;
+    border-bottom: 0.5px solid #ccc;
+    background: #383838;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.panel-header__search::placeholder {
+    color: #d2d2d2;
+}

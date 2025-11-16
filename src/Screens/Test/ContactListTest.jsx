@@ -1,52 +1,57 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { ContactsContext } from "../../context/ContactsContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const ContactListTest = () => {
-    const { contacts, isLoadingContacts, fetchContacts } = useContext(ContactsContext);
+    const { contacts, loading, error } = useContext(ContactsContext);
+    const { activeUser } = useContext(AuthContext);
 
-    useEffect(() => {
-        fetchContacts();
-    }, [fetchContacts]);
-
-    if (isLoadingContacts) {
-        return <p style={{ textAlign: "center" }}>Cargando contactos...</p>;
-    }
+    if (loading) return <p>Cargando...</p>;
+    if (error) return <p>Error: {error}</p>;
 
     return (
-        <div style={{ padding: "2rem" }}>
-            <h2>Lista de contactos</h2>
-            {contacts.length === 0 ? (
-                <p>No hay contactos aceptados todavía.</p>
-            ) : (
-                <ul style={{ listStyle: "none", padding: 0 }}>
-    {contacts.map((contact) => {
-    const user = contact.receiver_id || contact.requester_id;
-    return (
-        <li
-        key={contact._id}
-        style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem",
-            marginBottom: "1rem"
-        }}
-        >
-        <img
-            src={user?.avatar || "https://api.dicebear.com/8.x/avataaars/svg?seed=Anonimo&radius=50&size=70"}
-            alt={`Avatar de ${user?.name || "Usuario"}`}
-            style={{
-            width: "70px",
-            height: "70px",
-            borderRadius: "50%",
-            objectFit: "cover"
-            }}
-        />
-        <span>{user?.name || "Sin nombre"}</span>
-        </li>
-    );
-    })}
-</ul>
-            )}
+        <div>
+            <h2>Mis contactos</h2>
+            <ul style={{ listStyle: "none", padding: 0 }}>
+                {contacts.map((c) => (
+                    <li
+                        key={c._id}
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            marginBottom: "10px",
+                            background: "#f5f5f5",
+                            borderRadius: "8px",
+                            padding: "8px 12px",
+                            maxWidth: "300px"
+                        }}
+                    >
+                        <img
+                            src={
+                                c.avatar ||
+                                "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                            }
+                            alt={c.name}
+                            style={{
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "50%",
+                                objectFit: "cover",
+                            }}
+                        />
+                        <div>
+                            <strong>{c.name}</strong>
+                            <div style={{ fontSize: "0.85rem", color: "#666" }}>
+                                {c.email}
+                            </div>
+                            <div style={{ fontSize: "0.8rem", color: "#009688" }}>
+                                {c.status}
+                            </div>
+                        </div>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };

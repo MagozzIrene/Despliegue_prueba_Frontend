@@ -1,23 +1,27 @@
-import { createContext, useState, useEffect, useCallback, useContext } from "react";
+import { createContext, useState, useEffect, useContext, useCallback } from "react";
 import axios from "axios";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "@/context/AuthContext";
 
 export const ContactsContext = createContext({
     contacts: [],
-    isLoadingContacts: true,
-    fetchContacts: () => { },
-    addContact: () => { },
-    acceptContact: () => { },
-    removeContact: () => { },
+    isLoadingContacts: false,
+    fetchContacts: () => {},
+    updateLastMessageLocally: () => {},
 });
 
 const ContactsContextProvider = ({ children }) => {
-    const [contacts, setContacts] = useState([]);
-    const [isLoadingContacts, setIsLoadingContacts] = useState(true);
     const { activeUser } = useContext(AuthContext);
+    const [contacts, setContacts] = useState([]);
+    const [isLoadingContacts, setIsLoadingContacts] = useState(false);
 
-    const API_BASE =
-        import.meta.env.VITE_BACKEND_URL || "https://despliegue-prueba-backend.vercel.app";
+    const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+
+    const sortByLastMessage = (list) =>
+        [...list].sort((a, b) => {
+            const tA = a.last_message_time ? new Date(a.last_message_time).getTime() : 0;
+            const tB = b.last_message_time ? new Date(b.last_message_time).getTime() : 0;
+            return tB - tA;
+        });
 
     const fetchContacts = useCallback(async () => {
         if (!activeUser?._id) return;
@@ -25,69 +29,55 @@ const ContactsContextProvider = ({ children }) => {
 
         try {
             const token = localStorage.getItem("auth_token");
-            const { data } = await axios.get(
-                `${API_BASE}/api/contacts/${activeUser._id}/accepted`,
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
-            setContacts(data.data || []);
+            const { data } = await axios.get(`${API_BASE}/api/contacts/accepted`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const parsed = (data.data || []).map((c) => {
+                const other =
+                    c.requester_id?._id === activeUser._id
+                        ? c.receiver_id
+                        : c.requester_id;
+
+                return {
+                    contact_id: c._id,
+                    user_id: other?._id,
+                    name: other?.name || "",
+                    email: other?.email || "",
+                    avatar: other?.avatar || "",
+                    status: c.status,
+                    last_message: c.last_message ?? "Sin mensajes aún",
+                    last_message_time: c.last_message_time ?? null,
+                };
+            });
+
+            setContacts(sortByLastMessage(parsed));
         } catch (error) {
-            console.error("Error al cargar contactos:", error);
+            console.error("Error al obtener contactos:", error);
         } finally {
             setIsLoadingContacts(false);
         }
     }, [activeUser?._id]);
 
-    const addContact = async (receiverId) => {
-        try {
-            const token = localStorage.getItem("auth_token");
-            const { data } = await axios.post(
-                `${API_BASE}/api/contacts`,
-                {
-                    requester_id: activeUser._id,
-                    receiver_id: receiverId,
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            console.log("Solicitud enviada:", data);
-        } catch (error) {
-            console.error("Error al agregar contacto:", error);
-        }
-    };
-
-    const acceptContact = async (contactId) => {
-        try {
-            const token = localStorage.getItem("auth_token");
-            const { data } = await axios.put(
-                `${API_BASE}/api/contacts/${contactId}`,
-                { status: "aceptado" },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            console.log("Solicitud aceptada:", data);
-            await fetchContacts();
-        } catch (error) {
-            console.error("Error al aceptar contacto:", error);
-        }
-    };
-
-    const removeContact = async (contactId) => {
-        try {
-            const token = localStorage.getItem("auth_token");
-            await axios.delete(`${API_BASE}/api/contacts/${contactId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setContacts((prev) => prev.filter((c) => c._id !== contactId));
-        } catch (error) {
-            console.error("Error al eliminar contacto:", error);
-        }
-    };
-
     useEffect(() => {
-        if (activeUser?._id) {
-            fetchContacts();
-        }
-    }, [activeUser?._id, fetchContacts]);
+        fetchContacts();
+    }, [fetchContacts]);
+
+    const updateLastMessageLocally = (userId, messageText, time = new Date()) => {
+        setContacts((prev) =>
+            sortByLastMessage(
+                prev.map((c) =>
+                    c.user_id === userId
+                        ? {
+                                ...c,
+                                last_message: messageText,
+                                last_message_time: time,
+                        }
+                        : c
+                )
+            )
+        );
+    };
 
     return (
         <ContactsContext.Provider
@@ -95,9 +85,7 @@ const ContactsContextProvider = ({ children }) => {
                 contacts,
                 isLoadingContacts,
                 fetchContacts,
-                addContact,
-                acceptContact,
-                removeContact,
+                updateLastMessageLocally,
             }}
         >
             {children}

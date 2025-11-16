@@ -1,0 +1,29 @@
+.sidebar-tabs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.2rem;
+    height: 100%;
+    gap: 1rem;
+    background: var(--color-bg-sidebar);
+}
+
+.sidebar-tab {
+    background: transparent;
+    border: none;
+    color: var(--color-text-secondary);
+    padding: 0.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.sidebar-tab:hover {
+    background: var(--color-bg-light);
+    color: var(--color-text);
+}
+
+.sidebar-tab.active {
+/*     background: var(--color-accent); */
+    color: white;
+}

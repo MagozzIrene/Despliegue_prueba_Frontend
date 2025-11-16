@@ -1,0 +1,41 @@
+.group-card {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    padding: .6rem .8rem;
+    text-decoration: none;
+    border-radius: .75rem;
+    transition: background .15s ease;
+}
+
+.group-card:hover {
+    background: rgba(255,255,255,.04);
+    }
+
+    .group-card__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    object-fit: cover;
+    background: #111;
+    }
+
+    .group-card__info {
+    overflow: hidden;
+    }
+
+    .group-card__name {
+    font-size: .95rem;
+    margin: 0;
+    color: #eaeaea;
+    }
+
+    .group-card__desc {
+    margin: 0;
+    font-size: .8rem;
+    color: #b7b7b7;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}

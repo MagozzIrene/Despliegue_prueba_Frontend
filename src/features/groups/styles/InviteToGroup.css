@@ -1,0 +1,47 @@
+.invite-modal__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99;
+}
+
+.invite-modal {
+    width: min(420px, 92vw);
+    background: #1f1f1f;
+    color: #eaeaea;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+}
+
+.invite-form label {
+    display: block;
+    font-size: .9rem;
+    margin: .5rem 0 .25rem;
+}
+
+.invite-form input {
+    width: 100%;
+    padding: .6rem .7rem;
+    border-radius: 8px;
+    border: 1px solid #3b3b3b;
+    background: #242424;
+    color: #eee;
+}
+
+.invite-actions {
+    display: flex;
+    gap: .6rem;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.invite-error {
+    color: #ff8a8a;
+    margin: .4rem 0 0;
+    font-size: .9rem;
+}

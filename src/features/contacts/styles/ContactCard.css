@@ -1,0 +1,84 @@
+.contact {
+    display: flex;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: var(--space-sm);
+    border-radius: 0.3rem;
+    background-color: var(--contact-bg-color);
+    cursor: pointer;
+}
+
+.contact:hover {
+    background-color: var(--contact-bg-active);
+}
+
+.contact-card {
+    display: flex;
+}
+
+.contact__photo img {
+    max-width: 70px;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+.contact__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.contact__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contact__name {
+    font-size: var(--fs-base);
+}
+
+.contact__last-seen {
+    font-size: var(--fs-xs);
+    font-weight: 300;
+    color: var(--secondary-txt-color);
+}
+
+.contact__preview {
+    margin-top: var(--space-1xs);
+}
+
+.contact__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contact__time {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #888);
+    white-space: nowrap;
+    margin-left: 8px;
+}
+
+.contact__last-message {
+    font-size: 0.85rem;
+    color: #d2d2d2;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+@media only screen and (min-width: 750px) {
+    .contact__last-message {
+        font-size: 0.8rem;
+        font-weight: 400;
+    }
+
+    .contact__last-seen {
+        font-size: 0.8rem;
+    }
+}

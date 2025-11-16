@@ -44,7 +44,7 @@ export const LoginScreen = () => {
                 setActiveUser(response.data.user);
             }
 
-            navigate("/contacts");
+            navigate("/home");
         }
     }, [response]);
 
@@ -102,7 +102,7 @@ export const LoginScreen = () => {
                         {loading ? "Iniciando sesión..." : "Iniciar sesión"}
                     </button>
 
-                    <button class="guest-login-btn" type="button" onClick={loginAsGuest}>
+                    <button className="guest-login-btn" type="button" onClick={loginAsGuest}>
                         Entrar como invitado
                     </button>
 

@@ -1,0 +1,53 @@
+.group-chat {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .6rem .9rem;
+    border-bottom: 1px solid #222222;
+    background: #2c2c2c;
+}
+
+.members-line {
+    font-size: 15px;
+}
+
+.group-header__info {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+}
+
+.group-header__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.group-header h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.group-header small {
+    color: #a9a9a9;
+}
+
+.group-chat__content {
+    flex: 1;
+    min-height: 0;
+}
+
+.group-chat__form {
+    border-top: 1px solid #333;
+}
+
+.loading {
+    padding: 1rem;
+    color: #bbb;
+}
