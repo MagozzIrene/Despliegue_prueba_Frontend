@@ -89,11 +89,28 @@
     animation: messageFadeIn 0.25s ease forwards;
 }
 
+.message-sender {
+    display: block;
+    opacity: .8;
+    font-size: .78rem;
+    margin: 0 0 .2rem;
+}
+
+.message-item.message--own .message-sender.me {
+    text-align: right;
+}
+
+.message-item.message--other .message-sender.other {
+    text-align: left;
+}
+
+
 @keyframes messageFadeIn {
     from {
         opacity: 0;
         transform: translateY(6px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

@@ -101,7 +101,7 @@ const RegisterScreen = () => {
                 </form>
 
                 <p className="register-text">
-                    ¿Ya tenés una cuenta?<a
+                    ¿Ya tenés una cuenta? <a
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
