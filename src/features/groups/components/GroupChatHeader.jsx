@@ -58,14 +58,14 @@ const GroupChatHeader = () => {
         .filter(x => x.id)
         .map((x) => (x.id === activeUser._id ? "Tú" : x.name));
 
-    const formatMembers = (names, max = 3) => {
+    const formatMembers = (names, max = 5) => {
         if (names.length <= max) return names.join(", ");
         const visible = names.slice(0, max).join(", ");
         const rest = names.length - max;
         return `${visible} +${rest}`;
     };
 
-    const membersLine = formatMembers(memberNames, 3);
+    const membersLine = formatMembers(memberNames);
 
     return (
         <header className="group-header">
@@ -74,12 +74,7 @@ const GroupChatHeader = () => {
                 <div>
                     <h2 className="group-header__title">{group?.name || "Grupo"}</h2>
                     <div className="group-header__meta">
-{/*                         <span>{group?.description || " "}</span> */}
-{/*                         <span className="dot">•</span> */}
                         <span className="members-line">{membersLine}</span>
-{/*                         <span>
-                            {members.length} miembro{members.length === 1 ? "" : "s"}
-                        </span> */}
                     </div>
                 </div>
             </div>

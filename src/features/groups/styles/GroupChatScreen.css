@@ -38,6 +38,13 @@
     color: #a9a9a9;
 }
 
+.group-header__meta {
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width: 60ch;
+}
+
 .group-chat__content {
     flex: 1;
     min-height: 0;
