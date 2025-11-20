@@ -7,11 +7,13 @@ import GroupChatHeader from "../components/GroupChatHeader";
 import MessageForm from "@/features/chat/components/MessageForm";
 import ChatMessages from "@/features/chat/components/ChatMessages";
 import { GroupsContext } from "@/context/GroupsContext";
+import { AuthContext } from "@/context/AuthContext";
 
 const GroupChatScreen = () => {
     const { groupId } = useParams();
 
     const { getMembers } = useContext(GroupsContext);
+    const { activeUser } = useContext(AuthContext);
 
     const [groupMembers, setGroupMembers] = useState([]);
 
@@ -21,8 +23,6 @@ const GroupChatScreen = () => {
             setGroupMembers(Array.isArray(m) ? m : (m?.members ?? []));
         })();
     }, [groupId, getMembers]);
-
-
 
     const {
         messages,
@@ -39,6 +39,8 @@ const GroupChatScreen = () => {
         if (groupId) sendGroupMessage(text, groupId);
     };
 
+    const { deleteGroupMessage } = useContext(MessagesContext);
+
     return (
         <div className="group-chat">
             <GroupChatHeader />
@@ -47,7 +49,15 @@ const GroupChatScreen = () => {
                 {isLoading ? (
                     <p className="loading">Cargando mensajes…</p>
                 ) : (
-                    <ChatMessages messages={messages} members={groupMembers} showSender />
+                    <ChatMessages
+                        messages={messages}
+                        members={groupMembers}
+                        showSender
+                        myId={activeUser?._id}     
+                        isGroup={true}   
+                        onDelete={deleteGroupMessage}
+                        groupMembersLength={groupMembers.length}                    
+                    />
                 )}
             </div>
 

@@ -27,6 +27,7 @@
 .invite-form input {
     width: 100%;
     padding: .6rem .7rem;
+    margin-top: 10px;
     border-radius: 8px;
     border: 1px solid #3b3b3b;
     background: #242424;

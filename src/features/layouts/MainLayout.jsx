@@ -14,13 +14,24 @@ const MainLayout = () => {
     const [activeTab, setActiveTab] = useState("accepted");
 
     if (isMobile) {
-        return (
-            <div className="mobile-layout">
-                <SidebarTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-
-                <div className="contacts-container">
-                    <ContactsTabs activeTab={activeTab} />
+        if (!chatId && !groupId) {
+            return (
+                <div className="mobile-layout chat-list">
+                    <SidebarTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <div className="contacts-container">
+                        <ContactsTabs activeTab={activeTab} />
+                    </div>
                 </div>
+            );
+        }
+
+        return (
+            <div className="mobile-chat-layout chat-open">
+                {groupId ? (
+                    <GroupChatScreen isMobile />
+                ) : (
+                    <ChatScreen isMobile />
+                )}
             </div>
         );
     }
@@ -29,29 +40,29 @@ const MainLayout = () => {
         <div className="main-layout">
             <div className="main-layout__left">
                 <SidebarTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-
                 <div className="contacts-container">
                     <ContactsTabs activeTab={activeTab} />
                 </div>
             </div>
 
             <div className="main-layout__right">
-        {groupId ? (
-            <GroupChatScreen />
-            ) : chatId ? (
-            <ChatScreen />
-            ) : (
-            <div className="main-layout__placeholder">
-                <div className="placeholder-content">
-                <img src="/logo-wa-style.svg" alt="" />
-                <h2>Phantom Chats Web</h2>
-                <p>Seleccioná un chat para comenzar</p>
-                </div>
+                {groupId ? (
+                    <GroupChatScreen />
+                ) : chatId ? (
+                    <ChatScreen />
+                ) : (
+                    <div className="main-layout__placeholder">
+                        <div className="placeholder-content">
+                            <img src="/logo-wa-style.svg" alt="" />
+                            <h2>Phantom Chats Web</h2>
+                            <p>Seleccioná un chat para comenzar</p>
+                        </div>
+                    </div>
+                )}
             </div>
-            )}
-        </div>
         </div>
     );
 };
+
 
 export default MainLayout;

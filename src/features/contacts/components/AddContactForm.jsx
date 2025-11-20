@@ -27,7 +27,7 @@ const AddContactForm = ({ onContactAdded }) => {
                 return;
             }
 
-            const res = await axios.post(
+            await axios.post(
                 `${API_BASE}/api/contacts`,
                 { receiver_id: receiver._id },
                 { headers: { Authorization: `Bearer ${token}` } }
@@ -61,7 +61,12 @@ const AddContactForm = ({ onContactAdded }) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
-                <button className="btn-primary" type="submit" disabled={!email.trim()}>
+
+                <button
+                    className="btn-primary"
+                    type="submit"
+                    disabled={!email.trim()}
+                >
                     Agregar
                 </button>
             </form>
@@ -76,4 +81,3 @@ const AddContactForm = ({ onContactAdded }) => {
 };
 
 export default AddContactForm;
-

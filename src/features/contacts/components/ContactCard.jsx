@@ -11,13 +11,13 @@ const ContactCard = ({ id, name, avatar, last_message, last_message_time }) => {
         navigate(`/chat/${id}`);
     };
 
-    const truncateMessage = (text, maxLength = 25) => {
+    const truncateMessage = (text, maxLength = 15) => {
         if (!text) return "Sin mensajes aún";
         return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
     };
 
     return (
-        <div className="contact" onClick={handleClick}>
+        <div className="contact contact-card" onClick={handleClick}>
             <div className="contact__photo">
                 <img src={avatar} alt={`Avatar de ${name}`} />
             </div>

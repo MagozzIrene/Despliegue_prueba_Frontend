@@ -1,26 +1,45 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useParams } from "react-router";
 import { MessagesContext } from "@/context/MessagesContext";
+import { AuthContext } from "@/context/AuthContext";
+
 import ChatHeader from "../components/ChatHeader";
 import MessageList from "../components/MessageList";
 import MessageForm from "../components/MessageForm";
-import "../styles/ChatScreen.css";
 import Loader from "../../shared/Loader";
+
+import "../styles/ChatScreen.css";
 
 const ChatScreen = () => {
 
     const { chatId } = useParams();
+    const { activeUser } = useContext(AuthContext);
 
     const {
         messages,
         fetchMessages,
         isLoading,
         addNewMessage,
-    } = React.useContext(MessagesContext);
+        markPrivateMessageAsRead,
+        deletePrivateMessage,
+    } = useContext(MessagesContext);
+
+    const storedUser = JSON.parse(localStorage.getItem("auth_user") || "{}");
+    const myUserId = activeUser?._id || storedUser?._id;
 
     useEffect(() => {
         if (chatId) fetchMessages(chatId);
     }, [chatId, fetchMessages]);
+
+    useEffect(() => {
+        if (!chatId || !messages.length || !myUserId) return;
+
+        messages.forEach((m) => {
+            if (m.senderId !== myUserId && !m.read) {
+                markPrivateMessageAsRead(m._id);
+            }
+        });
+    }, [messages, chatId, myUserId, markPrivateMessageAsRead]);
 
     const handleSendMessage = async (text) => {
         await addNewMessage(text, chatId);
@@ -37,11 +56,14 @@ const ChatScreen = () => {
     return (
         <div className="chat-screen">
             <ChatHeader />
-            
+
             {isLoading ? (
                 <Loader message="Cargando mensajes..." size={40} />
             ) : (
-                <MessageList messages={messages} />
+                <MessageList
+                    messages={messages}
+                    onDelete={deletePrivateMessage}
+                />
             )}
 
             <MessageForm onSend={handleSendMessage} />

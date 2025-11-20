@@ -17,11 +17,7 @@ function App() {
 
   return (
     <Routes>
-{/*       <Route path="/" element={<LoginScreen />} />
-      <Route path="/login" element={<LoginScreen />} />
-      <Route path="/register" element={<RegisterScreen />} />
-      <Route path="/recover" element={<RecoverPasswordScreen />} /> */}
-
+      
       <Route path="/" element={<LoginScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />

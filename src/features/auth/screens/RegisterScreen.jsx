@@ -54,6 +54,7 @@ const RegisterScreen = () => {
                             placeholder="Tu nombre"
                             required
                             onChange={handleInputChange}
+                            maxLength={20}
                         />
                     </div>
 

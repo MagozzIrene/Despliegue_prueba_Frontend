@@ -1,4 +1,4 @@
-import { createContext, useCallback, useMemo, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 import axios from "axios";
 
 export const GroupsContext = createContext({
@@ -10,94 +10,142 @@ export const GroupsContext = createContext({
     getGroupById: async () => { },
     getMembers: async () => { },
     setGroups: () => { },
+    updateGroupLastMessageLocally: () => { },
+});
+
+const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+
+const api = axios.create({ baseURL: API_BASE });
+api.interceptors.request.use((cfg) => {
+    const t = localStorage.getItem("auth_token");
+    if (t) cfg.headers.Authorization = `Bearer ${t}`;
+    return cfg;
 });
 
 const GroupsContextProvider = ({ children }) => {
     const [groups, setGroups] = useState([]);
     const [isLoadingGroups, setIsLoadingGroups] = useState(false);
+    const [hasLoadedGroups, setHasLoadedGroups] = useState(false);
 
-    const unwrap = (resp) => (resp?.data?.data ?? resp?.data ?? resp);
+    const fetchMyGroups = useCallback(
+        async ({ force = false } = {}) => {
+            if (hasLoadedGroups && !force) {
+                return;
+            }
 
-    const API_BASE =
-        import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+            setIsLoadingGroups(true);
+            try {
+                const { data } = await api.get("/api/group-members/user/me");
+                const list = Array.isArray(data?.data) ? data.data : [];
 
-    console.log("[Groups] API_BASE =", API_BASE);
+                const sorted = [...list].sort((a, b) => {
+                    const tA = a.last_message_time
+                        ? new Date(a.last_message_time).getTime()
+                        : (a.created_at ? new Date(a.created_at).getTime() : 0);
 
-    const authHeaders = useMemo(() => {
-        const token = localStorage.getItem("auth_token");
-        return { Authorization: `Bearer ${token}` };
-    }, []);
+                    const tB = b.last_message_time
+                        ? new Date(b.last_message_time).getTime()
+                        : (b.created_at ? new Date(b.created_at).getTime() : 0);
 
-    const fetchMyGroups = useCallback(async () => {
-        setIsLoadingGroups(true);
-        try {
-            const resp = await axios.get(
-                `${API_BASE}/api/group-members/user/me`,
-                { headers: authHeaders }
-            );
-            const meGroups = resp?.data?.data ?? resp?.data ?? [];
-            setGroups(Array.isArray(meGroups) ? meGroups : []);
-        } catch (err) {
-            console.error("fetchMyGroups error:", err);
-            setGroups([]);
-        } finally {
-            setIsLoadingGroups(false);
-        }
-    }, [API_BASE, authHeaders]);
+                    return tB - tA;
+                });
+
+                setGroups(sorted);
+                setHasLoadedGroups(true);
+            } catch (err) {
+                console.error("fetchMyGroups error:", err);
+                setGroups([]);
+            } finally {
+                setIsLoadingGroups(false);
+            }
+        },
+        [hasLoadedGroups]
+    );
 
     const createGroup = useCallback(
         async ({ name, description = "", avatar = "" }) => {
             const payload = { name, description, avatar };
-            const { data } = await axios.post(
-                `${API_BASE}/api/groups`,
-                payload,
-                { headers: authHeaders }
-            );
+            const { data } = await api.post("/api/groups", payload);
             const created = data?.data || data;
-            setGroups((prev) => [created, ...prev]);
+
+            setGroups((prev) => {
+                const newList = [...prev, created];
+
+                return newList.sort((a, b) => {
+                    const tA = a.last_message_time
+                        ? new Date(a.last_message_time).getTime()
+                        : (a.created_at ? new Date(a.created_at).getTime() : 0);
+
+                    const tB = b.last_message_time
+                        ? new Date(b.last_message_time).getTime()
+                        : (b.created_at ? new Date(b.created_at).getTime() : 0);
+
+                    return tB - tA;
+                });
+            });
+
             return created;
         },
-        [API_BASE, authHeaders]
+        []
     );
 
-    const inviteToGroup = useCallback(
-        async ({ group_id, user_id, email }) => {
-            const payload = { group_id, user_id, email };
-            const resp = await axios.post(
-                `${API_BASE}/api/group-invites`,
-                payload,
-                { headers: authHeaders }
-            );
-            return unwrap(resp);
-        },
-        [API_BASE, authHeaders]
-    );
+    const inviteToGroup = useCallback(async ({ group_id, user_id, email }) => {
+        const payload = { group_id, user_id, email };
+        const { data } = await api.post("/api/group-invites", payload);
+        return data?.data ?? data;
+    }, []);
 
-    const getGroupById = useCallback(
-        async (group_id) => {
-            const { data } = await axios.get(
-                `${API_BASE}/api/groups/${group_id}`,
-                { headers: authHeaders }
-            );
-            return data?.data ?? data ?? null;
-        },
-        [API_BASE, authHeaders]
-    );
+    const getGroupById = useCallback(async (group_id) => {
+        const { data } = await api.get(`/api/groups/${group_id}`);
+        return data?.data ?? data ?? null;
+    }, []);
 
-    const getMembers = useCallback(
-        async (group_id) => {
-            const { data } = await axios.get(
-                `${API_BASE}/api/group-members/${group_id}`,
-                { headers: authHeaders }
-            );
+    const getMembers = useCallback(async (group_id) => {
+        const { data } = await api.get(`/api/group-members/${group_id}`);
+        if (Array.isArray(data?.data)) return data.data;
+        if (Array.isArray(data)) return data;
+        if (Array.isArray(data?.members)) return data.members;
+        return [];
+    }, []);
 
-            if (Array.isArray(data?.data)) return data.data;
-            if (Array.isArray(data)) return data;
-            if (Array.isArray(data?.members)) return data.members;
-            return [];
-        },
-        [API_BASE, authHeaders]
-    );
+    const updateGroupLastMessageLocally = (groupId, lastMessage, lastMessageTime) => {
+        setGroups((prev) =>
+            [...prev]
+                .map((g) =>
+                    String(g._id) === String(groupId)
+                        ? {
+                            ...g,
+                            last_message: lastMessage,
+                            last_message_time: lastMessageTime,
+                            // unread_count: 0, no pude implementarlo bien, pero no pierdo la esperanza// 
+                        }
+                        : g
+                )
+                .sort((a, b) => {
+                    const tA = a.last_message_time
+                        ? new Date(a.last_message_time).getTime()
+                        : 0;
+                    const tB = b.last_message_time
+                        ? new Date(b.last_message_time).getTime()
+                        : 0;
+                    return tB - tA;
+                })
+        );
+    };
+
+    const deleteGroup = useCallback(async (group_id) => {
+        try {
+            await api.delete(`/api/groups/${group_id}`);
+
+            setGroups(prev => prev.filter(g => g._id !== group_id));
+
+            return true;
+        } catch (err) {
+            console.error("Error eliminando grupo:", err);
+            return false;
+        }
+    }, []);
+
 
     return (
         <GroupsContext.Provider
@@ -110,6 +158,8 @@ const GroupsContextProvider = ({ children }) => {
                 inviteToGroup,
                 getGroupById,
                 getMembers,
+                updateGroupLastMessageLocally,
+                deleteGroup,
             }}
         >
             {children}

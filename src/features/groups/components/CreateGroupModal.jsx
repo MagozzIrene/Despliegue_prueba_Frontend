@@ -34,7 +34,7 @@ const CreateGroupModal = ({ onClose }) => {
                 <form className="form-vertical" onSubmit={handleSubmit}>
                     <label className="field">
                         <span>Nombre</span>
-                        <input autoFocus value={name} onChange={(e) => setName(e.target.value)} />
+                        <input type="text" autoFocus value={name} onChange={(e) => setName(e.target.value)} maxLength={20} />
                     </label>
 
                     <label className="field">

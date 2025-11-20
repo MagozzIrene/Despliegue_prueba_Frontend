@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import MessageList from "./MessageList";
 import "../styles/ChatMessages.css";
 
-const ChatMessages = ({ messages, members = [], showSender = false }) => {
+const ChatMessages = ({ messages, members = [], showSender = false, myId, isGroup, onDelete, groupMembersLength }) => {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -13,7 +13,15 @@ const ChatMessages = ({ messages, members = [], showSender = false }) => {
 
     return (
         <div className="chat-messages">
-            <MessageList messages={messages} members={members} showSender={showSender} />
+            <MessageList
+                messages={messages}
+                members={members}
+                showSender={showSender}
+                myId={myId}
+                isGroup={isGroup}
+                onDelete={onDelete}
+                groupMembersLength={groupMembersLength} 
+            />
             <div ref={messagesEndRef} />
         </div>
     );

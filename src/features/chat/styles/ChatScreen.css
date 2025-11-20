@@ -22,6 +22,11 @@
 
 .chat-header__name {
     font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.chat-header__meta {
+    font-size: 0.8rem;
 }
 
 .message-list {
@@ -32,6 +37,7 @@
     flex-direction: column;
     gap: 0.5rem;
     scroll-behavior: smooth;
+    background-color: #383838;
 }
 
 .message-item {
@@ -50,7 +56,7 @@
 
 .message--other {
     align-self: flex-start;
-    background: #353535;
+    background: #2c2c2c;
     color: #e9edef;
     border-radius: 2px 10px 10px 10px;
 }
@@ -102,6 +108,122 @@
 
 .message-item.message--other .message-sender.other {
     text-align: left;
+}
+
+.message-sender-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 2px 0 4px;
+    opacity: .9;
+    }
+
+    .message-sender-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    }
+
+    .message-sender-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.message-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    max-width: 80%;
+}
+
+.message-row.own {
+    align-self: flex-end;
+    flex-direction: row;
+}
+
+.message-row.other {
+    align-self: flex-start;
+}
+
+.msg-delete-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #777;
+    font-size: 1.8rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+/*     margin-right: 28px;
+    padding: 0; */
+}
+
+.message-row.own {
+    align-items: center;
+}
+
+.message-row.own:hover .msg-delete-btn {
+    opacity: 1;
+}
+
+
+.msg-avatar-spacer {
+    width: 28px;
+    height: 28px;
+}
+
+.msg-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.msg-bubble {
+    background: #2c2c2c;
+    padding: 6px 8px;
+    border-radius: 10px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.message-row.own .msg-bubble {
+    background: #005c4b;
+    color: #e9edef;
+    border-radius: 10px 2px 10px 10px;
+}
+
+.msg-sender-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.msg-text {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.msg-time {
+    font-size: 10px;
+    opacity: 0.8;
+    align-self: flex-end;
+}
+
+.msg-status {
+    font-size: 0.75rem;
+    margin-left: 4px;
+}
+
+.msg-status--sent {
+    color: #a6a6a6;
+}
+
+.msg-status--read {
+    color: #34b7f1;
 }
 
 

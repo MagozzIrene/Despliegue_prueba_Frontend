@@ -56,7 +56,7 @@
 }
 
 .contact__time {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: var(--text-secondary, #888);
     white-space: nowrap;
     margin-left: 8px;

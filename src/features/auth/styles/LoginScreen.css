@@ -89,7 +89,7 @@
 .input-group input:focus,
 .login-card .input-group input:focus,
 .login-card .input-group input:focus-visible {
-    outline: none !important;
+    outline: none;
     border-color: #2a7b6f;
     box-shadow: 0 0 0 3px rgba(42, 123, 111, 0.25);
 }
