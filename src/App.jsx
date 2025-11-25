@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import useIsMobile from "./hooks/useIsMobile";
 import { Route, Routes } from "react-router";
-/* import RegisterScreen from "./Screens/RegisterScreen/RegisterScreen";
-import { LoginScreen } from "./Screens/LoginScreen/LoginScreen"; */
 import AuthMiddleware from "./Middlewares/AuthMiddleware";
-
-/* import { RecoverPasswordScreen } from "./Screens/Auth/RecoverPasswordScreen"; */
 import MainLayout from "./features/layouts/MainLayout";
 
 import GroupChatScreen from "./features/groups/screens/GroupChatScreen";

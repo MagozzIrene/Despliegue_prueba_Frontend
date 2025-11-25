@@ -1,3 +1,8 @@
+import { useState } from "react";
+import ConfirmModal from "@/shared/ConfirmModal";
+import { FiTrash2 } from "react-icons/fi";
+import "../styles/PendingItems.css"
+
 export default function PendingItem({
     contact,
     currentUserId,
@@ -11,6 +16,18 @@ export default function PendingItem({
             : contact.requester_id;
 
     const sentByUser = contact.requester_id?._id === currentUserId;
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const handleAskDelete = () => {
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        setShowDeleteModal(false);
+        await onDelete(contact._id);
+    };
+
 
     return (
         <div className="pending-contact">
@@ -33,10 +50,19 @@ export default function PendingItem({
                     </button>
                 </div>
             ) : (
-                <button className="btn-delete" onClick={() => onDelete(contact._id)}>
-                    🗑️
+                <button className="btn-delete" onClick={handleAskDelete}>
+                    <FiTrash2 />
                 </button>
             )}
+            <ConfirmModal
+                open={showDeleteModal}
+                title="Cancelar solicitud"
+                message={`¿Seguro que querés cancelar la solicitud enviada a "${otherUser.name}"?`}
+                confirmLabel="Eliminar"
+                cancelLabel="Cancelar"
+                onCancel={() => setShowDeleteModal(false)}
+                onConfirm={handleConfirmDelete}
+            />
         </div>
     );
 }

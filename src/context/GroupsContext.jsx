@@ -108,7 +108,7 @@ const GroupsContextProvider = ({ children }) => {
         return [];
     }, []);
 
-    const updateGroupLastMessageLocally = (groupId, lastMessage, lastMessageTime) => {
+/*     const updateGroupLastMessageLocally = (groupId, lastMessage, lastMessageTime) => {
         setGroups((prev) =>
             [...prev]
                 .map((g) =>
@@ -117,7 +117,7 @@ const GroupsContextProvider = ({ children }) => {
                             ...g,
                             last_message: lastMessage,
                             last_message_time: lastMessageTime,
-                            // unread_count: 0, no pude implementarlo bien, pero no pierdo la esperanza// 
+                            // unread_count: 0, no pude implementarlo bien, pero no pierdo la esperanza jaja// 
                         }
                         : g
                 )
@@ -131,7 +131,35 @@ const GroupsContextProvider = ({ children }) => {
                     return tB - tA;
                 })
         );
-    };
+    }; */
+
+    const updateGroupLastMessageLocally = (groupId, info) => {
+    setGroups((prev) =>
+        [...prev]
+            .map((g) =>
+                String(g._id) === String(groupId)
+                    ? {
+                        ...g,
+                        last_message: info.text,
+                        last_message_time: info.sent_at,
+
+                        last_message_sender: info.senderName,
+                        last_message_sender_id: info.senderId,
+                        last_message_sender_avatar: info.senderAvatar,
+                    }
+                    : g
+            )
+            .sort((a, b) => {
+                const tA = a.last_message_time
+                    ? new Date(a.last_message_time).getTime()
+                    : 0;
+                const tB = b.last_message_time
+                    ? new Date(b.last_message_time).getTime()
+                    : 0;
+                return tB - tA;
+            })
+    );
+};
 
     const deleteGroup = useCallback(async (group_id) => {
         try {

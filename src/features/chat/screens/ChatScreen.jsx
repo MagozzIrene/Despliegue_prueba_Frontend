@@ -1,14 +1,15 @@
-import React, { useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { useParams } from "react-router";
 import { MessagesContext } from "@/context/MessagesContext";
 import { AuthContext } from "@/context/AuthContext";
 
-import ChatHeader from "../components/ChatHeader";
+import ChatHeader from "../components/ChatHeader"
 import MessageList from "../components/MessageList";
 import MessageForm from "../components/MessageForm";
-import Loader from "../../shared/Loader";
 
-import "../styles/ChatScreen.css";
+import "../styles/chat.css"
+import "../styles/MessageForm.css"
+import Loader from "@/shared/Loader";
 
 const ChatScreen = () => {
 

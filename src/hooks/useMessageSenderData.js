@@ -2,16 +2,7 @@ const fallbackAvatar = (seed = "user") =>
     `https://api.dicebear.com/8.x/avataaars/svg?seed=${encodeURIComponent(seed)}`;
 
 const getId = (v) =>
-    (typeof v === "object" && v !== null ? (v._id || v.id) : v) ?? null;
-
-const normalizeSenderId = (msg) =>
-    getId(
-        msg?.sender ??
-        msg?.sender_id ??
-        msg?.senderId ??
-        msg?.user ??
-        msg?.user_id
-    );
+    (typeof v === "object" && v !== null ? v._id || v.id : v) ?? null;
 
 export default function useMessageSenderData(
     msg,
@@ -21,12 +12,15 @@ export default function useMessageSenderData(
     myId,
     activeUser
 ) {
-    const senderId = String(normalizeSenderId(msg) ?? "");
-    const currentUserId = String(myId ?? activeUser?._id ?? "");
+
+    const senderObj = msg.sender || {};
+    const senderId = String(getId(senderObj) || "");
+
+    const currentUserId = String(myId || activeUser?._id || "");
     const isOwnMessage = senderId === currentUserId;
 
     const prev = messages[index - 1];
-    const prevSenderId = prev ? String(normalizeSenderId(prev)) : null;
+    const prevSenderId = prev ? String(getId(prev.sender)) : null;
     const senderChanged = !prev || prevSenderId !== senderId;
 
     const byId = {};
@@ -41,19 +35,19 @@ export default function useMessageSenderData(
     };
 
     for (const m of members) {
-        const uid = getId(m?.user_id) ?? getId(m?.user) ?? getId(m?._id);
+        const uid = getId(m.user_id || m.user || m);
         if (!uid) continue;
 
         const name =
-            m?.name ??
-            m?.user_id?.name ??
-            m?.user?.name ??
+            m?.name ||
+            m?.user_id?.name ||
+            m?.user?.name ||
             "Miembro";
 
         const avatar =
-            m?.avatar ??
-            m?.user_id?.avatar ??
-            m?.user?.avatar ??
+            m?.avatar ||
+            m?.user_id?.avatar ||
+            m?.user?.avatar ||
             null;
 
         const color = colors[hash(String(uid)) % colors.length];
@@ -62,8 +56,16 @@ export default function useMessageSenderData(
     }
 
     const member = byId[senderId] || {};
-    const senderName = member.name || msg?.sender?.name || "Miembro";
-    const senderAvatar = member.avatar || msg?.sender?.avatar || fallbackAvatar(senderName);
+    const senderName =
+        member.name ||
+        senderObj.name ||
+        "Miembro";
+
+    const senderAvatar =
+        member.avatar ||
+        senderObj.avatar ||
+        fallbackAvatar(senderName);
+
     const senderColor = member.color;
 
     return {

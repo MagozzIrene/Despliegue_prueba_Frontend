@@ -4,7 +4,7 @@ import useIsMobile from "@/hooks/useIsMobile";
 
 import ContactsTabs from "@/features/contacts/components/ContactsTabs";
 import ChatScreen from "@/features/chat/screens/ChatScreen";
-import "./MainLayout.css";
+import "../layouts/styles/MainLayout.css";
 import SidebarTabs from "./SidebarTabs";
 import GroupChatScreen from "../groups/screens/GroupChatScreen";
 

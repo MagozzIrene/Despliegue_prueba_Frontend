@@ -1,13 +1,17 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { MessagesContext } from "@/context/MessagesContext";
-
-import "../styles/GroupChatScreen.css";
-import GroupChatHeader from "../components/GroupChatHeader";
-import MessageForm from "@/features/chat/components/MessageForm";
-import ChatMessages from "@/features/chat/components/ChatMessages";
 import { GroupsContext } from "@/context/GroupsContext";
 import { AuthContext } from "@/context/AuthContext";
+
+import GroupChatHeader from "../components/GroupChatHeader";
+import MessageList from "@/features/chat/components/MessageList";
+import MessageForm from "@/features/chat/components/MessageForm";
+import Loader from "@/shared/Loader";
+
+import "../styles/GroupChatScreen.css";
+import "../../chat/styles/chat.css"
+import "../../chat/styles/MessageForm.css"
 
 const GroupChatScreen = () => {
     const { groupId } = useParams();
@@ -29,6 +33,7 @@ const GroupChatScreen = () => {
         isLoading,
         fetchGroupMessages,
         sendGroupMessage,
+        deleteGroupMessage,
     } = useContext(MessagesContext);
 
     useEffect(() => {
@@ -39,31 +44,25 @@ const GroupChatScreen = () => {
         if (groupId) sendGroupMessage(text, groupId);
     };
 
-    const { deleteGroupMessage } = useContext(MessagesContext);
-
     return (
-        <div className="group-chat">
-            <GroupChatHeader />
+        <div className="chat-screen">
 
-            <div className="group-chat__content">
+            <GroupChatHeader />
+            
                 {isLoading ? (
-                    <p className="loading">Cargando mensajes…</p>
+                    <Loader message="Cargando mensajes..." size={40} />
                 ) : (
-                    <ChatMessages
+                    <MessageList
                         messages={messages}
                         members={groupMembers}
-                        showSender
-                        myId={activeUser?._id}     
-                        isGroup={true}   
+                        isGroup={true}
+                        myId={activeUser?._id}
+                        groupMembersLength={groupMembers.length}
                         onDelete={deleteGroupMessage}
-                        groupMembersLength={groupMembers.length}                    
                     />
                 )}
-            </div>
 
-            <div className="group-chat__form">
-                <MessageForm onSend={handleSend} />
-            </div>
+            <MessageForm onSend={handleSend} />
         </div>
     );
 };

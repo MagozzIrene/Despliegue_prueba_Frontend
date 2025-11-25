@@ -1,7 +1,7 @@
 import { FiMessageSquare, FiClock, FiUsers, FiLogOut } from "react-icons/fi";
 import { useContext, useMemo } from "react";
 import { AuthContext } from "@/context/AuthContext";
-import "./SidebarTabs.css";
+import "../layouts/styles/SidebarTabs.css";
 
 function getAvatarFromToken() {
     try {

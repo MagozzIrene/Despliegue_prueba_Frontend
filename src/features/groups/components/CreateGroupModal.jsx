@@ -39,7 +39,7 @@ const CreateGroupModal = ({ onClose }) => {
 
                     <label className="field">
                         <span>Descripción (opcional)</span>
-                        <input value={description} onChange={(e) => setDesc(e.target.value)} />
+                        <input value={description} onChange={(e) => setDesc(e.target.value)} maxLength={40}/>
                     </label>
 
                     <div className="modal-actions">

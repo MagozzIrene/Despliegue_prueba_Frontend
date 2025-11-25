@@ -1,19 +1,13 @@
 .contact {
     display: flex;
-    gap: var(--space-sm);
     width: 100%;
-    padding: var(--space-sm);
     border-radius: 0.3rem;
-    background-color: var(--contact-bg-color);
     cursor: pointer;
-}
-
-.contact:hover {
-    background-color: var(--contact-bg-active);
 }
 
 .contact-card {
     display: flex;
+    gap: 8px;
 }
 
 .contact__photo img {
@@ -36,28 +30,22 @@
 }
 
 .contact__name {
-    font-size: var(--fs-base);
+
+    color: #fff;
+    display: inline-block;
+    max-width: 10ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .contact__last-seen {
-    font-size: var(--fs-xs);
     font-weight: 300;
-    color: var(--secondary-txt-color);
-}
-
-.contact__preview {
-    margin-top: var(--space-1xs);
-}
-
-.contact__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 .contact__time {
     font-size: 0.7rem;
-    color: var(--text-secondary, #888);
+    color: #888;
     white-space: nowrap;
     margin-left: 8px;
 }
@@ -70,7 +58,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
 
 @media only screen and (min-width: 750px) {
     .contact__last-message {

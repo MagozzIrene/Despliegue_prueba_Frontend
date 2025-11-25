@@ -2,8 +2,9 @@ import { useEffect, useState, useContext, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 import { GroupsContext } from "@/context/GroupsContext";
 import InviteToGroup from "./InviteToGroup";
-import { AuthContext } from "../../../context/AuthContext";
-import { FiArrowLeft } from "react-icons/fi";
+import { AuthContext } from "@/context/AuthContext";
+import { FiArrowLeft, FiUserPlus, FiTrash2 } from "react-icons/fi";
+import ConfirmModal from "@/shared/ConfirmModal"
 
 const fallbackAvatar = (seed) =>
     `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(
@@ -19,6 +20,7 @@ const GroupChatHeader = () => {
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showInvite, setShowInvite] = useState(false);
+    const [showDeleteGroup, setShowDeleteGroup] = useState(false);
 
     const navigate = useNavigate();
 
@@ -97,34 +99,33 @@ const GroupChatHeader = () => {
     const handleDeleteGroup = useCallback(async () => {
         if (!groupId || !isAdmin) return;
 
-        const confirmed = window.confirm(
-            "¿Seguro que querés eliminar este grupo? Esta acción no se puede deshacer."
-        );
-        if (!confirmed) return;
-
         try {
             await deleteGroup(groupId);
-            navigate("/home")
+            navigate("/home");
         } catch (e) {
             console.error("Error al eliminar el grupo:", e);
         }
     }, [groupId, isAdmin, deleteGroup, navigate]);
 
     return (
-        <header className="group-header">
+        <header className="chat-header group-header">
+            <div className="group-header__main">
+                <button
+                    className="header-back-btn group-back-btn"
+                    onClick={() => navigate("/home")}
+                >
+                    <FiArrowLeft />
+                </button>
 
-            <button className="header-back-btn" onClick={() => navigate("/home")}>
-                <FiArrowLeft />
-            </button>
-
-            <div className="group-header__info">
-                <img className="group-header__avatar" src={avatar} alt="" />
-                <div>
-                    <h2 className="group-header__title">
-                        {group?.name || "Grupo"}
-                    </h2>
-                    <div className="group-header__meta">
-                        <span className="members-line">{membersLine}</span>
+                <div className="group-header__info">
+                    <img className="group-header__avatar" src={avatar} alt="" />
+                    <div>
+                        <h2 className="group-header__title">
+                            {group?.name || "Grupo"}
+                        </h2>
+                        <div className="group-header__meta">
+                            <span className="members-line">{membersLine}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -138,16 +139,16 @@ const GroupChatHeader = () => {
                             onClick={() => setShowInvite(true)}
                             disabled={loading}
                         >
-                            Invitar
+                            <FiUserPlus size={20} />
                         </button>
 
                         <button
                             type="button"
                             className="btn btn-primary"
-                            onClick={handleDeleteGroup}
+                            onClick={() => setShowDeleteGroup(true)}
                             disabled={loading}
                         >
-                            Eliminar
+                            <FiTrash2 size={20} />
                         </button>
                     </>
                 )}
@@ -160,6 +161,19 @@ const GroupChatHeader = () => {
                     onClose={() => setShowInvite(false)}
                 />
             )}
+
+            <ConfirmModal
+                open={showDeleteGroup}
+                title="Eliminar grupo"
+                message={`¿Seguro que querés eliminar el grupo "${group?.name}"? Esta acción no se puede deshacer.`}
+                confirmLabel="Eliminar"
+                cancelLabel="Cancelar"
+                onCancel={() => setShowDeleteGroup(false)}
+                onConfirm={async () => {
+                    setShowDeleteGroup(false);
+                    await handleDeleteGroup();
+                }}
+            />
         </header>
     );
 };

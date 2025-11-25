@@ -1,227 +1,56 @@
-/* import { useContext, useEffect, useMemo, useRef } from "react";
-import { AuthContext } from "@/context/AuthContext";
-import { MessagesContext } from "@/context/MessagesContext";
-import "../styles/ChatScreen.css";
-import { formatMessageTime } from "@/services/authService";
-
-const fallbackAvatar = (seed = "user") =>
-    `https://api.dicebear.com/8.x/avataaars/svg?seed=${encodeURIComponent(seed)}`;
-
-const getId = (v) =>
-    (typeof v === "object" && v !== null ? (v._id || v.id) : v) ?? null;
-
-const normalizeSenderId = (msg) =>
-    getId(
-        msg?.sender ??
-        msg?.sender_id ??
-        msg?.senderId ??
-        msg?.user ??
-        msg?.user_id
-    );
-
-const MessageList = ({
-    messages,
-    members = [],
-    showSender = false,
-    myId,
-    isGroup,
-    onDelete,
-    groupMembersLength = 0,
-}) => {
-    const { activeUser } = useContext(AuthContext);
-    const { markGroupMessageAsRead } = useContext(MessagesContext);
-
-    const bottomRef = useRef(null);
-    const observerRef = useRef(null); 
-
-    useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
-
-    useEffect(() => {
-        if (!isGroup) return;
-
-        if (observerRef.current) {
-            observerRef.current.disconnect();
-        }
-
-        observerRef.current = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const messageId = entry.target.dataset.messageId;
-                        if (messageId) {
-                            markGroupMessageAsRead(messageId);
-                        }
-                    }
-                });
-            },
-            { threshold: 0.6 }
-        );
-
-        return () => {
-            if (observerRef.current) {
-                observerRef.current.disconnect();
-            }
-        };
-    }, [isGroup, markGroupMessageAsRead]);
-
-    const byId = useMemo(() => {
-        const map = {};
-        const colors = ["#8bc34a", "#03a9f4", "#e91e63", "#ff9800", "#9c27b0", "#ffc107"];
-
-        const hash = (str) => {
-            let h = 0;
-            for (let i = 0; i < str.length; i++) {
-                h = str.charCodeAt(i) + ((h << 5) - h);
-            }
-            return Math.abs(h);
-        };
-
-        for (const m of members) {
-            const uid = getId(m?.user_id) ?? getId(m?.user) ?? getId(m?._id);
-            if (!uid) continue;
-
-            const name =
-                m?.name ??
-                m?.user_id?.name ??
-                m?.user?.name ??
-                "Miembro";
-
-            const avatar =
-                m?.avatar ??
-                m?.user_id?.avatar ??
-                m?.user?.avatar ??
-                null;
-
-            const color = colors[hash(String(uid)) % colors.length];
-
-            map[String(uid)] = { name, avatar, color };
-        }
-
-        return map;
-    }, [members]);
-
-    if (!messages?.length) {
-        return (
-            <div className="message-list message-list--empty">
-                <p>No hay mensajes todavía 💬</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="message-list">
-            {messages.map((msg, i) => {
-                const senderId = String(normalizeSenderId(msg) ?? "");
-                const currentUserId = String(myId ?? activeUser?._id ?? "");
-                const isOwnMessage = senderId === currentUserId;
-
-                const prev = messages[i - 1];
-                const prevSenderId = prev ? String(normalizeSenderId(prev)) : null;
-                const senderChanged = !prev || prevSenderId !== senderId;
-
-                const member = byId[senderId] || {};
-                const name = member.name || msg?.sender?.name || "Miembro";
-                const avatar = member.avatar || msg?.sender?.avatar || fallbackAvatar(name);
-
-                let showChecks = false;
-                let checksClass = "";
-
-                if (isOwnMessage) {
-                    if (!isGroup) {
-                        showChecks = true;
-                        checksClass = msg.read
-                            ? "msg-status--read"
-                            : "msg-status--sent";
-                    } else {
-                        const readBy = msg.read_by || [];
-                        const othersCount = Math.max(groupMembersLength - 1, 0);
-
-                        if (readBy.length > 0) {
-                            showChecks = true;
-                            if (othersCount > 0 && readBy.length >= othersCount) {
-                                checksClass = "msg-status--read";
-                            } else {
-                                checksClass = "msg-status--sent";
-                            }
-                        }
-                    }
-                }
-
-                let lastEl = null;
-                const refCallback = (el) => {
-                    const observer = observerRef.current;
-                    if (!observer || !isGroup || isOwnMessage) return;
-
-                    if (el) {
-                        lastEl = el;
-                        el.dataset.messageId = msg._id;
-                        observer.observe(el);
-                    } else if (lastEl) {
-                        observer.unobserve(lastEl);
-                    }
-                };
-
-                return (
-                    <div
-                        key={msg._id || i}
-                        className={`message-row ${isOwnMessage ? "own" : "other"}`}
-                        ref={isGroup && !isOwnMessage ? refCallback : null}
-                    >
-
-                        {isOwnMessage && onDelete && (
-                            <button
-                                className="msg-delete-btn"
-                                onClick={() => onDelete(msg._id)}
-                            >
-                                🗑
-                            </button>
-                        )}
-
-                        {isGroup ? (
-                            !isOwnMessage && senderChanged ? (
-                                <img className="msg-avatar" src={avatar} alt={name} />
-                            ) : (
-                                <div className="msg-avatar-spacer"></div>
-                            )
-                        ) : null}
-
-                        <div className="msg-bubble">
-                            {isGroup && !isOwnMessage && senderChanged && (
-                                <span className="msg-sender-name" style={{ color: member.color }}>
-                                    {name}
-                                </span>
-                            )}
-
-                            <p className="msg-text">{msg.text}</p>
-
-                            <span className="msg-time">
-                                {formatMessageTime(msg.sent_at)}{" "}
-                                {showChecks && (
-                                    <span className={`msg-status ${checksClass}`}>
-                                        ✔✔
-                                    </span>
-                                )}
-                            </span>
-                        </div>
-                    </div>
-                );
-            })}
-            <div ref={bottomRef} />
-        </div>
-    );
-};
-
-export default MessageList; */
-
-
-import { useRef, useEffect } from "react";
+import { Fragment, memo, useRef, useState } from "react";
 import MessageItem from "./MessageItem";
 import useAutoScroll from "@/hooks/useAutoScroll";
 import useMessageObserver from "@/hooks/useMessageObserver";
+import ConfirmModal from "@/shared/ConfirmModal";
 
-import "../styles/ChatScreen.css";
+const getMessageDate = (msg) => {
+    if (!msg) return null;
+    const raw = msg.sent_at || msg.created_at || msg.date;
+    if (!raw) return null;
+    const d = new Date(raw);
+    return isNaN(d.getTime()) ? null : d;
+};
+
+const isSameDay = (a, b) =>
+    a &&
+    b &&
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+
+const getDateLabel = (date) => {
+    if (!date) return "";
+
+    const today = new Date();
+    const todayMid = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const msgMid = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const diffMs = todayMid.getTime() - msgMid.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "Hoy";
+    if (diffDays === 1) return "Ayer";
+
+    return date.toLocaleDateString("es-AR", {
+        day: "numeric",
+        month: "short",
+        year: today.getFullYear() === date.getFullYear() ? undefined : "numeric",
+    });
+};
+
+const getDateLabelForMessage = (messages, index) => {
+    const msg = messages[index];
+    const currentDate = getMessageDate(msg);
+    if (!currentDate) return "";
+
+    const prev = messages[index - 1];
+    const prevDate = getMessageDate(prev);
+
+    if (prevDate && isSameDay(prevDate, currentDate)) return "";
+
+    return getDateLabel(currentDate);
+};
 
 const MessageList = ({
     messages,
@@ -231,6 +60,14 @@ const MessageList = ({
     onDelete,
     groupMembersLength = 0,
 }) => {
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [messageToDelete, setMessageToDelete] = useState(null);
+
+    const handleAskDelete = (messageId) => {
+        setMessageToDelete(messageId);
+        setShowDeleteModal(true);
+    };
     const bottomRef = useRef(null);
     const observerRef = useRef(null);
 
@@ -247,24 +84,53 @@ const MessageList = ({
     }
 
     return (
-        <div className="message-list">
-            {messages.map((msg, index) => (
-                <MessageItem
-                    key={msg._id || index}
-                    msg={msg}
-                    index={index}
-                    messages={messages}
-                    members={members}
-                    myId={myId}
-                    isGroup={isGroup}
-                    onDelete={onDelete}
-                    groupMembersLength={groupMembersLength}
-                    observerRef={observerRef}
-                />
-            ))}
+        <div className="message-list" role="list">
+            {messages.map((msg, index) => {
+                const dateLabel = getDateLabelForMessage(messages, index);
+
+                return (
+                    <Fragment key={msg._id || index}>
+                        {dateLabel && (
+                            <div className="msg-date-separator">
+                                <span className="msg-date-separator__pill">
+                                    {dateLabel}
+                                </span>
+                            </div>
+                        )}
+
+                        <MessageItem
+                            msg={msg}
+                            index={index}
+                            messages={messages}
+                            members={members}
+                            myId={myId}
+                            isGroup={isGroup}
+                            onDelete={handleAskDelete}
+                            groupMembersLength={groupMembersLength}
+                            observerRef={observerRef}
+                        />
+                    </Fragment>
+                );
+            })}
             <div ref={bottomRef} />
+
+            <ConfirmModal
+                open={showDeleteModal}
+                title="Eliminar mensaje"
+                message="¿Seguro que querés eliminar este mensaje? Esta acción no se puede deshacer."
+                confirmLabel="Eliminar"
+                cancelLabel="Cancelar"
+                onCancel={() => setShowDeleteModal(false)}
+                onConfirm={async () => {
+                    setShowDeleteModal(false);
+                    if (messageToDelete) {
+                        await onDelete(messageToDelete);
+                    }
+                    setMessageToDelete(null);
+                }}
+            />
         </div>
     );
 };
 
-export default MessageList;
+export default memo(MessageList);

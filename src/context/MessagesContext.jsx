@@ -23,25 +23,107 @@ const MessagesContextProvider = ({ children }) => {
         import.meta.env.VITE_BACKEND_URL ||
         "https://despliegue-prueba-backend.vercel.app";
 
-    const normalizeMessage = (raw) => {
+    /*     const normalizeMessage = (raw) => {
+        if (!raw) return null;
+    
         const sender =
             raw.sender?._id ||
             raw.sender_id?._id ||
             raw.sender ||
             raw.sender_id ||
             null;
+    
+        const receiver =
+            raw.receiver?._id ||
+            raw.receiver_id?._id ||
+            raw.receiver ||
+            raw.receiver_id ||
+            null;
+    
+        const group =
+            raw.group_id?._id ||
+            raw.group_id ||
+            null;
+    
+        return {
+            _id: raw._id,
+            text: raw.text,
+            sent_at: raw.sent_at,
+    
+            senderId: sender ? String(sender) : null,
+            receiverId: receiver ? String(receiver) : null,
+    
+            groupId: group ? String(group) : null,
+    
+            read: Boolean(raw.read),
+            read_by: Array.isArray(raw.read_by) ? raw.read_by : [],
+        };
+    }; */
+
+    const normalizeMessage = (raw) => {
+        if (!raw) return null;
+
+        const senderObj =
+            (raw.sender_id && typeof raw.sender_id === "object" && raw.sender_id._id)
+                ? raw.sender_id
+                : (raw.sender && typeof raw.sender === "object" && raw.sender._id)
+                    ? raw.sender
+                    : null;
+
+        const senderId =
+            senderObj?._id ||
+            raw.sender_id ||
+            raw.sender ||
+            null;
+
+        const receiverObj =
+            (raw.receiver_id && typeof raw.receiver_id === "object" && raw.receiver_id._id)
+                ? raw.receiver_id
+                : (raw.receiver && typeof raw.receiver === "object" && raw.receiver._id)
+                    ? raw.receiver
+                    : null;
+
+        const receiverId =
+            receiverObj?._id ||
+            raw.receiver_id ||
+            raw.receiver ||
+            null;
+
+        const groupId =
+            raw.group_id?._id ||
+            raw.group_id ||
+            null;
 
         return {
             _id: raw._id,
             text: raw.text,
             sent_at: raw.sent_at,
-            read: raw.read ?? false,
-            read_by: raw.read_by ?? [],
-            senderId: sender ? String(sender) : null,
-            groupId: raw.group_id?._id || raw.group_id || null,
-            receiverId: raw.receiver?._id || raw.receiver || null,
+
+            sender: senderObj
+                ? {
+                    _id: senderObj._id,
+                    name: senderObj.name || "",
+                    avatar: senderObj.avatar || "",
+                }
+                : { _id: String(senderId) },
+
+            receiver: receiverObj
+                ? {
+                    _id: receiverObj._id,
+                    name: receiverObj.name || "",
+                    avatar: receiverObj.avatar || "",
+                }
+                : receiverId
+                    ? { _id: String(receiverId) }
+                    : null,
+
+            groupId: groupId ? String(groupId) : null,
+
+            read: Boolean(raw.read),
+            read_by: Array.isArray(raw.read_by) ? raw.read_by : [],
         };
     };
+
 
     const fetchMessages = useCallback(
         async (chatIdFromURL) => {
@@ -135,7 +217,13 @@ const MessagesContextProvider = ({ children }) => {
 
             setMessages((prev) => [...prev, msg]);
 
-            updateGroupLastMessageLocally(groupIdFromURL, msg.text, msg.sent_at);
+            updateGroupLastMessageLocally(groupIdFromURL, {
+                text: msg.text,
+                sent_at: msg.sent_at,
+                senderName: msg.sender?.name || "",
+                senderId: msg.sender?._id || "",
+                senderAvatar: msg.sender?.avatar || "",
+            });
         } catch (err) {
             console.error("Error al enviar mensaje de grupo:", err);
         }

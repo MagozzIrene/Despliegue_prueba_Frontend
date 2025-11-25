@@ -1,0 +1,18 @@
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    margin: 15px 0;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.contact-item:hover,
+.contact-item.active {
+    background-color: #383838;
+}
+
+.contact-item.active {
+    border-left: 2px solid #008069;
+}

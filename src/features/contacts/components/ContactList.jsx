@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { ContactsContext } from "@/context/ContactsContext";
 import "../styles/ContactList.css";
 import ContactsTabs from "./ContactsTabs";
+import Loader from "@/shared/Loader";
 
 const ContactList = ({ searchTerm }) => {
     const { contacts, isLoadingContacts } = useContext(ContactsContext);
@@ -9,7 +10,7 @@ const ContactList = ({ searchTerm }) => {
     if (isLoadingContacts) {
         return (
             <div className="contact-list">
-                {/* <LoaderSpinner /> */}
+                <Loader message="Cargando contactos..." size={40} />
             </div>
         );
     }

@@ -1,155 +1,32 @@
 .group-card {
+    width: 100%;
     display: flex;
     align-items: center;
-    gap: .8rem;
-    padding: .6rem .8rem;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
     text-decoration: none;
-    border-radius: .75rem;
-    transition: background .15s ease;
+    margin: 10px 0;
+    background: var(--color-bg-light);
+    transition: background 0.15s ease;
 }
 
 .group-card:hover {
-    background: rgba(255,255,255,.04);
-    }
-
-    .group-card__avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 999px;
-    object-fit: cover;
-    background: #111;
-    }
-
-    .group-card__info {
-    overflow: hidden;
-    }
-
-    .group-card__name {
-    font-size: .95rem;
-    margin: 0;
-    color: #eaeaea;
-    }
-
-    .group-card__desc {
-    margin: 0;
-    font-size: .8rem;
-    color: #b7b7b7;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width: 180px;
+    background: #383838;
 }
 
-.group-card__last {
-    font-size: 0.85rem;
-    color: #d1d1d1;
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.group-card.active {
+    background: #383838;
+    border-left: 2px solid #008069;
 }
-
-.group-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 12px;
-    text-decoration: none;
-    background: var(--color-bg-secondary);
-    transition: background 0.2s ease;
-}
-
-/* .group-card:hover {
-    background: var(--color-bg-hover);
-} */
-
-.group-card__avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-
-.group-card__content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.group-card__top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.group-card__name {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #eaeaea;
-    margin: 0;
-}
-
-.group-card__time {
-    font-size: 0.78rem;
-    color: #eaeaea;
-    flex-shrink: 0;
-}
-
-.group-card__bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 4px;
-    gap: 10px;
-}
-
-.group-card__preview {
-    font-size: 0.85rem;
-    color: #eaeaea;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 220px;
-}
-
-.group-card__badge {
-    background: var(--color-accent);
-    color: white;
-    font-size: 0.75rem;
-    padding: 3px 7px;
-    border-radius: 12px;
-    min-width: 22px;
-    text-align: center;
-    font-weight: 600;
-}
-
-.group-card {
-    width: 100%;
-    display: flex;
-    gap: 12px;
-    padding: 10px 14px;
-    align-items: center;
-    cursor: pointer;
-    text-decoration: none;
-    color: var(--color-text);
-    border-radius: 10px;
-    background: var(--color-bg-secondary);
-    transition: background 0.15s;
-}
-
-/* .group-card:hover {
-    background: var(--color-bg-hover);
-} */
 
 .group-card__avatar {
     width: 48px;
     height: 48px;
     border-radius: 50%;
     flex-shrink: 0;
+    object-fit: cover;
 }
 
 .group-card__main {
@@ -168,20 +45,27 @@
 .group-card__name {
     font-size: 1rem;
     font-weight: 600;
-    margin: 0;
     color: var(--color-text);
+    margin: 0;
+
+    max-width: 20ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .group-card__time {
     font-size: 0.75rem;
-    opacity: 0.7;
+    color: var(--color-text-secondary);
     white-space: nowrap;
 }
 
 .group-card__desc {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
     opacity: 0.7;
-    margin: 2px 0 0 0;
+    margin-top: 3px;
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -190,7 +74,8 @@
 .group-card__preview {
     font-size: 0.82rem;
     color: var(--color-text-secondary);
-    margin: 2px 0 0 0;
+    margin-top: 2px;
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -203,9 +88,9 @@
     height: 20px;
     border-radius: 50%;
     font-size: 0.75rem;
+
     display: flex;
     align-items: center;
     justify-content: center;
     margin-left: auto;
 }
-

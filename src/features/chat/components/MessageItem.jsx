@@ -1,7 +1,8 @@
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
 import { formatMessageTime } from "@/services/authService";
 import useMessageSenderData from "@/hooks/useMessageSenderData";
+import { FiTrash2 } from "react-icons/fi";
 
 const MessageItem = ({
     msg,
@@ -50,7 +51,10 @@ const MessageItem = ({
         if (!isGroup || isOwnMessage || !observerRef.current) return;
 
         if (el) {
-            el.dataset.messageId = msg._id;
+            const id = msg._id || msg.id;
+            if (!id) return;
+
+            el.dataset.messageId = id;
             observerRef.current.observe(el);
         }
     };
@@ -63,9 +67,11 @@ const MessageItem = ({
             {isOwnMessage && onDelete && (
                 <button
                     className="msg-delete-btn"
-                    onClick={() => onDelete(msg._id)}
+                    onClick={() => onDelete(msg._id || msg.id)}
+                    aria-label="Eliminar mensaje"
+                    title="Eliminar mensaje"
                 >
-                    🗑
+                    <FiTrash2 />
                 </button>
             )}
 

@@ -3,7 +3,7 @@ import "../styles/ContactCard.css";
 import { formatMessageTime } from "@/services/authService";
 import { useNavigate } from "react-router";
 
-const ContactCard = ({ id, name, avatar, last_message, last_message_time }) => {
+const ContactCard = ({ id, name, avatar, last_message, last_message_time, isActive }) => {
 
     const navigate = useNavigate();
 
@@ -17,7 +17,8 @@ const ContactCard = ({ id, name, avatar, last_message, last_message_time }) => {
     };
 
     return (
-        <div className="contact contact-card" onClick={handleClick}>
+        <div className={`contact contact-card ${isActive ? "active" : ""}`}
+            onClick={handleClick}>
             <div className="contact__photo">
                 <img src={avatar} alt={`Avatar de ${name}`} />
             </div>
