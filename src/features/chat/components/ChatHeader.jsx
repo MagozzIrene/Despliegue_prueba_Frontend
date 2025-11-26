@@ -15,10 +15,10 @@ const ChatHeader = () => {
     const navigate = useNavigate();
 
     const {
-        contacts,
-        isLoadingContacts,
-        fetchContacts,
-    } = useContext(ContactsContext);
+    accepted: contacts,
+    isLoading: isLoadingContacts,
+    fetchAllContacts: fetchContacts,
+} = useContext(ContactsContext);
 
     const [presence, setPresence] = useState(null);
     const [loadingPresence, setLoadingPresence] = useState(false);

@@ -33,14 +33,15 @@ const ChatScreen = () => {
     }, [chatId, fetchMessages]);
 
     useEffect(() => {
-        if (!chatId || !messages.length || !myUserId) return;
+    if (!chatId || !messages.length || !myUserId) return;
 
-        messages.forEach((m) => {
-            if (m.senderId !== myUserId && !m.read) {
-                markPrivateMessageAsRead(m._id);
-            }
-        });
-    }, [messages, chatId, myUserId, markPrivateMessageAsRead]);
+    messages.forEach((m) => {
+        if (m.sender?._id !== myUserId && !m.read) {
+            markPrivateMessageAsRead(m._id);
+        }
+    });
+}, [messages, chatId, myUserId, markPrivateMessageAsRead]);
+
 
     const handleSendMessage = async (text) => {
         await addNewMessage(text, chatId);

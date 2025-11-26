@@ -43,12 +43,6 @@ export default function GroupCard({ group, isActive }) {
                         : "Sin mensajes aún"}
                 </p>
             </div>
-
-            {/* 
-            {group.unread_count > 0 && (
-                <span className="group-card__badge">{group.unread_count}</span>
-            )} 
-            */}
         </Link>
     );
 }

@@ -23,43 +23,6 @@ const MessagesContextProvider = ({ children }) => {
         import.meta.env.VITE_BACKEND_URL ||
         "https://despliegue-prueba-backend.vercel.app";
 
-    /*     const normalizeMessage = (raw) => {
-        if (!raw) return null;
-    
-        const sender =
-            raw.sender?._id ||
-            raw.sender_id?._id ||
-            raw.sender ||
-            raw.sender_id ||
-            null;
-    
-        const receiver =
-            raw.receiver?._id ||
-            raw.receiver_id?._id ||
-            raw.receiver ||
-            raw.receiver_id ||
-            null;
-    
-        const group =
-            raw.group_id?._id ||
-            raw.group_id ||
-            null;
-    
-        return {
-            _id: raw._id,
-            text: raw.text,
-            sent_at: raw.sent_at,
-    
-            senderId: sender ? String(sender) : null,
-            receiverId: receiver ? String(receiver) : null,
-    
-            groupId: group ? String(group) : null,
-    
-            read: Boolean(raw.read),
-            read_by: Array.isArray(raw.read_by) ? raw.read_by : [],
-        };
-    }; */
-
     const normalizeMessage = (raw) => {
         if (!raw) return null;
 

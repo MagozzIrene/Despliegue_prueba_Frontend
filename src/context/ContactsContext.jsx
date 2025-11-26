@@ -3,18 +3,27 @@ import axios from "axios";
 import { AuthContext } from "@/context/AuthContext";
 
 export const ContactsContext = createContext({
-    contacts: [],
-    isLoadingContacts: false,
-    fetchContacts: () => {},
-    updateLastMessageLocally: () => {},
+    accepted: [],
+    pending: [],
+    isLoading: false,
+
+    fetchAllContacts: () => { },
+    sendRequest: () => { },
+    acceptRequest: () => { },
+    rejectRequest: () => { },
+    deleteRequest: () => { },
+    updateLastMessageLocally: () => { },
 });
 
 const ContactsContextProvider = ({ children }) => {
     const { activeUser } = useContext(AuthContext);
-    const [contacts, setContacts] = useState([]);
-    const [isLoadingContacts, setIsLoadingContacts] = useState(false);
+
+    const [accepted, setAccepted] = useState([]);
+    const [pending, setPending] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
+    const token = localStorage.getItem("auth_token");
 
     const sortByLastMessage = (list) =>
         [...list].sort((a, b) => {
@@ -23,17 +32,21 @@ const ContactsContextProvider = ({ children }) => {
             return tB - tA;
         });
 
-    const fetchContacts = useCallback(async () => {
+    const fetchAllContacts = useCallback(async () => {
         if (!activeUser?._id) return;
-        setIsLoadingContacts(true);
 
+        setIsLoading(true);
         try {
-            const token = localStorage.getItem("auth_token");
-            const { data } = await axios.get(`${API_BASE}/api/contacts/accepted`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const [acceptedRes, pendingRes] = await Promise.all([
+                axios.get(`${API_BASE}/api/contacts/accepted`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                }),
+                axios.get(`${API_BASE}/api/contacts/pending`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                }),
+            ]);
 
-            const parsed = (data.data || []).map((c) => {
+            const parsedAccepted = (acceptedRes.data.data || []).map((c) => {
                 const other =
                     c.requester_id?._id === activeUser._id
                         ? c.receiver_id
@@ -51,27 +64,64 @@ const ContactsContextProvider = ({ children }) => {
                 };
             });
 
-            setContacts(sortByLastMessage(parsed));
-        } catch (error) {
-            console.error("Error al obtener contactos:", error);
+            const parsedPending = pendingRes.data.data || [];
+
+            setAccepted(sortByLastMessage(parsedAccepted));
+            setPending(parsedPending);
+        } catch (e) {
+            console.error("Error en fetchAllContacts:", e);
         } finally {
-            setIsLoadingContacts(false);
+            setIsLoading(false);
         }
     }, [activeUser?._id]);
 
     useEffect(() => {
-        fetchContacts();
-    }, [fetchContacts]);
+        fetchAllContacts();
+    }, [fetchAllContacts]);
 
-    const updateLastMessageLocally = (userId, messageText, time = new Date()) => {
-        setContacts((prev) =>
+    const sendRequest = async (receiverId) => {
+        await axios.post(
+            `${API_BASE}/api/contacts`,
+            { receiver_id: receiverId },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        fetchAllContacts();
+    };
+
+    const acceptRequest = async (contactId) => {
+        await axios.put(
+            `${API_BASE}/api/contacts/${contactId}`,
+            { status: "aceptado" },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        fetchAllContacts();
+    };
+
+    const rejectRequest = async (contactId) => {
+        await axios.put(
+            `${API_BASE}/api/contacts/${contactId}`,
+            { status: "rechazado" },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        fetchAllContacts();
+    };
+
+    const deleteRequest = async (contactId) => {
+        await axios.delete(`${API_BASE}/api/contacts/${contactId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        fetchAllContacts();
+    };
+
+    const updateLastMessageLocally = (userId, text, time = new Date()) => {
+        setAccepted((prev) =>
             sortByLastMessage(
                 prev.map((c) =>
                     c.user_id === userId
                         ? {
-                                ...c,
-                                last_message: messageText,
-                                last_message_time: time,
+                            ...c,
+                            last_message: text,
+                            last_message_time: time,
                         }
                         : c
                 )
@@ -82,9 +132,16 @@ const ContactsContextProvider = ({ children }) => {
     return (
         <ContactsContext.Provider
             value={{
-                contacts,
-                isLoadingContacts,
-                fetchContacts,
+                accepted,
+                pending,
+                isLoading,
+
+                fetchAllContacts,
+                sendRequest,
+                acceptRequest,
+                rejectRequest,
+                deleteRequest,
+
                 updateLastMessageLocally,
             }}
         >

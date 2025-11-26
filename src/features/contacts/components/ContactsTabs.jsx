@@ -1,6 +1,4 @@
-import { useContext, useState } from "react";
-import axios from "axios";
-
+import { useContext, useEffect, useState } from "react";
 import PanelHeader from "./PanelHeader";
 import AddContactForm from "../components/AddContactForm";
 import Loader from "@/shared/Loader";
@@ -13,55 +11,55 @@ import { ContactsContext } from "@/context/ContactsContext";
 import "../styles/ContactsTabs.css";
 import GroupsList from "../../groups/components/GroupsList";
 import PendingContactsList from "./PendingContactsList";
-import usePendingContacts from "@/hooks/usePendingContacts";
-import useAcceptedContacts from "@/hooks/useAcceptedContacts";
 import AcceptedContactsList from "./AcceptedContactsList";
 import CreateGroupModal from "../../groups/components/CreateGroupModal";
 
 const ContactsTabs = ({ activeTab }) => {
-    const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
-    const token = localStorage.getItem("auth_token");
-    const [showCreate, setShowCreate] = useState(false);
-
-    const { handleSearch, search } = useSearch();
     const currentUserId = JSON.parse(localStorage.getItem("user"))?._id;
 
-    const { filtered: accepted, isLoadingContacts } = useAcceptedContacts(search);
-    const { pending, loading: loadingPending, setPending } = usePendingContacts(
-        search,
-        API_BASE,
-        currentUserId
-    );
+    const [showCreate, setShowCreate] = useState(false);
+    const { handleSearch, search } = useSearch();
+
+    const {
+        accepted,
+        pending,
+        isLoading,
+        fetchAllContacts,
+        acceptRequest,
+        rejectRequest,
+        deleteRequest,
+    } = useContext(ContactsContext);
 
     const { groups, isLoadingGroups } = useGroupsTab(search, activeTab);
 
-    const { fetchContacts } = useContext(ContactsContext);
+    useEffect(() => {
+        handleSearch("");
+    }, [activeTab]);
+
+
+    const filteredAccepted = accepted.filter((c) =>
+        c.name.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const filteredPending = pending.filter((c) => {
+        const otherUser =
+            c.requester_id?._id === currentUserId
+                ? c.receiver_id
+                : c.requester_id;
+
+        return otherUser?.name?.toLowerCase().includes(search.toLowerCase());
+    });
 
     const handleAccept = async (id) => {
-        await axios.put(
-            `${API_BASE}/api/contacts/${id}`,
-            { status: "aceptado" },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setPending((p) => p.filter((c) => c._id !== id));
-        fetchContacts();
+        await acceptRequest(id);
     };
 
     const handleReject = async (id) => {
-        await axios.put(
-            `${API_BASE}/api/contacts/${id}`,
-            { status: "rechazado" },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setPending((p) => p.filter((c) => c._id !== id));
+        await rejectRequest(id);
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`${API_BASE}/api/contacts/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        fetchContacts();
-        setPending((p) => p.filter((c) => c._id !== id));
+        await deleteRequest(id);
     };
 
     return (
@@ -79,35 +77,47 @@ const ContactsTabs = ({ activeTab }) => {
             />
 
             <div className="tabs-content">
+
                 {activeTab === "accepted" && (
-                    isLoadingContacts ? (
+                    isLoading ? (
                         <Loader message="Cargando..." />
                     ) : (
-                        <AcceptedContactsList contacts={accepted} />
+                        filteredAccepted.length === 0 ? (
+                            <p className="empty-msg">
+                                {search.trim()
+                                    ? "No hay resultados."
+                                    : "No hay chats aún."}
+                            </p>
+                        ) : (
+                            <AcceptedContactsList contacts={filteredAccepted} />
+                        )
                     )
                 )}
 
                 {activeTab === "pending" && (
                     <>
                         <AddContactForm
-                            onContactAdded={async () => {
-                                const { data } = await axios.get(
-                                    `${API_BASE}/api/contacts/pending`,
-                                    { headers: { Authorization: `Bearer ${token}` } }
-                                );
-                                setPending(data?.data || []);
-                            }}
+                            onContactAdded={() => fetchAllContacts()}
                         />
-                        {loadingPending ? (
+
+                        {isLoading ? (
                             <Loader message="Cargando..." />
                         ) : (
-                            <PendingContactsList
-                                contacts={pending}
-                                currentUserId={currentUserId}
-                                onAccept={handleAccept}
-                                onReject={handleReject}
-                                onDelete={handleDelete}
-                            />
+                            filteredPending.length === 0 ? (
+                                <p className="empty-msg">
+                                    {search.trim()
+                                        ? "No hay resultados."
+                                        : "No hay solicitudes."}
+                                </p>
+                            ) : (
+                                <PendingContactsList
+                                    contacts={filteredPending}
+                                    currentUserId={currentUserId}
+                                    onAccept={handleAccept}
+                                    onReject={handleReject}
+                                    onDelete={handleDelete}
+                                />
+                            )
                         )}
                     </>
                 )}
@@ -125,16 +135,22 @@ const ContactsTabs = ({ activeTab }) => {
 
                         {isLoadingGroups ? (
                             <Loader message="Cargando..." />
+                        ) : search.trim() === "" && groups.length === 0 ? (
+                            <p className="empty-msg">
+                                No perteneces a ningún grupo.
+                            </p>
+                        ) : groups.length === 0 ? (
+                            <p className="empty-msg">
+                                No hay resultados.
+                            </p>
                         ) : (
                             <GroupsList groups={groups} />
                         )}
-
                         {showCreate && (
                             <CreateGroupModal onClose={() => setShowCreate(false)} />
                         )}
                     </>
                 )}
-
             </div>
         </div>
     );

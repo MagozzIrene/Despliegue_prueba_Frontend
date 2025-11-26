@@ -34,12 +34,6 @@
 
 }
 
-/*  .contacts-tabs {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-} */
-
 .tab-contact {
     display: flex;
     align-items: center;
@@ -113,7 +107,7 @@
 }
 
 .contacts-tabs {
-    min-height:  0 /* 100% */;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     transition: opacity 0.2s ease-in;
@@ -121,27 +115,19 @@
 
 
 .tabs-content {
-
     flex: 1;
-
+    gap: 15px;
     min-height: 0;
     display: flex;
     flex-direction: column;
-
     position: relative;
     transition: opacity 0.2s ease-in-out;
     padding: 0 25px;
-/*     height: 100dvh; */
-
     overflow-y: auto;
-    overflow-x: hidden; 
-
-
-
+    overflow-x: hidden;
     position: relative;
     transition: opacity 0.2s ease-in-out;
     padding: 0 25px 16px;
-
     scrollbar-width: none;
     -ms-overflow-style: none;
 }

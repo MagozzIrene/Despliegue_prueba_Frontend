@@ -108,31 +108,6 @@ const GroupsContextProvider = ({ children }) => {
         return [];
     }, []);
 
-/*     const updateGroupLastMessageLocally = (groupId, lastMessage, lastMessageTime) => {
-        setGroups((prev) =>
-            [...prev]
-                .map((g) =>
-                    String(g._id) === String(groupId)
-                        ? {
-                            ...g,
-                            last_message: lastMessage,
-                            last_message_time: lastMessageTime,
-                            // unread_count: 0, no pude implementarlo bien, pero no pierdo la esperanza jaja// 
-                        }
-                        : g
-                )
-                .sort((a, b) => {
-                    const tA = a.last_message_time
-                        ? new Date(a.last_message_time).getTime()
-                        : 0;
-                    const tB = b.last_message_time
-                        ? new Date(b.last_message_time).getTime()
-                        : 0;
-                    return tB - tA;
-                })
-        );
-    }; */
-
     const updateGroupLastMessageLocally = (groupId, info) => {
     setGroups((prev) =>
         [...prev]
